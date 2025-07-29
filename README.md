@@ -2,9 +2,13 @@
 A sleek, web-based tool designed to evaluate password strength in real-time, providing visual feedback and an estimated brute-force crack time. Built with a cyberpunk-inspired black and blue (#000000, #3533cd) theme, this project is perfect for learning about password security in an engaging way.
 # Features
 Real-Time Strength Meter: Visualizes password strength with a dynamic bar (red for weak, orange for medium, green for strong).
+
 Detailed Feedback: Suggests improvements like adding uppercase letters, numbers, or special characters.
+
 Brute-Force Crack Time Estimate: Shows how long it would take to crack the password using a simplified model (based on character set and length).
+
 Responsive Design: Looks great on both desktop and mobile devices.
+
 Modern Styling: Uses a gradient background, glassmorphism, and smooth animations for a futuristic UI.
 # Demo
 Try it live on GitHub Pages (replace with your actual GitHub Pages URL after enabling it).
