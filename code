@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Checker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #000000, #3533cd);
+            color: #ffffff;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            color: #3533cd;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 16px;
+            border: 2px solid #3533cd;
+            border-radius: 8px;
+            background: #1a1a1a;
+            color: #ffffff;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #ffffff;
+        }
+        #strength-meter {
+            height: 12px;
+            width: 100%;
+            background: #333;
+            border-radius: 6px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        #strength-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            transition: width 0.5s ease, background-color 0.5s ease;
+        }
+        #feedback {
+            font-size: 14px;
+            margin: 15px 0;
+            color: #d3d3d3;
+            line-height: 1.5;
+        }
+        #crack-time {
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 15px;
+            color: #3533cd;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+                width: 95%;
+            }
+            h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Password Strength Checker</h2>
+        <input type="text" id="password" placeholder="Enter your password" oninput="checkPassword()">
+        <div id="strength-meter">
+            <div id="strength-fill"></div>
+        </div>
+        <div id="feedback"></div>
+        <div id="crack-time"></div>
+    </div>
+
+    <script>
+        function checkPassword() {
+            const password = document.getElementById('password').value;
+            const strengthFill = document.getElementById('strength-fill');
+            const feedback = document.getElementById('feedback');
+            const crackTime = document.getElementById('crack-time');
+
+            // Initialize variables
+            let strength = 0;
+            let messages = [];
+            let crackTimeSeconds = 0;
+
+            // Check password length
+            if (password.length === 0) {
+                strengthFill.style.width = '0%';
+                strengthFill.style.backgroundColor = '#333';
+                feedback.innerHTML = 'Please enter a password.';
+                crackTime.innerHTML = '';
+                return;
+            }
+
+            if (password.length < 6) {
+                messages.push('Password is too short. Use at least 6 characters.');
+            } else {
+                strength += 20;
+            }
+
+            // Check for different character types
+            if (/[A-Z]/.test(password)) strength += 20;
+            else messages.push('Add uppercase letters for better strength.');
+
+            if (/[a-z]/.test(password)) strength += 20;
+            else messages.push('Add lowercase letters for better strength.');
+
+            if (/[0-9]/.test(password)) strength += 20;
+            else messages.push('Add numbers for better strength.');
+
+            if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+            else messages.push('Add special characters for better strength.');
+
+            // Update strength meter
+            strengthFill.style.width = strength + '%';
+            if (strength <= 40) {
+                strengthFill.style.backgroundColor = 'red';
+            } else if (strength <= 80) {
+                strengthFill.style.backgroundColor = 'orange';
+            } else {
+                strengthFill.style.backgroundColor = 'green';
+            }
+
+            // Calculate estimated crack time (simplified for demo)
+            const charSetSize = calculateCharSetSize(password);
+            crackTimeSeconds = estimateCrackTime(password.length, charSetSize);
+            const timeFormatted = formatCrackTime(crackTimeSeconds);
+
+            // Update feedback
+            feedback.innerHTML = messages.length > 0 ? messages.join('<br>') : 'Strong password!';
+            crackTime.innerHTML = `Estimated time to crack: ${timeFormatted}`;
+        }
+
+        function calculateCharSetSize(password) {
+            let size = 0;
+            if (/[a-z]/.test(password)) size += 26;
+            if (/[A-Z]/.test(password)) size += 26;
+            if (/[0-9]/.test(password)) size += 10;
+            if (/[^A-Za-z0-9]/.test(password)) size += 32; // Approx for special chars
+            return size || 1;
+        }
+
+        function estimateCrackTime(length, charSetSize) {
+            // Assume 10 billion guesses per second (modern GPU cracking speed)
+            const guesses = Math.pow(charSetSize, length);
+            return guesses / 10_000_000_000;
+        }
+
+        function formatCrackTime(seconds) {
+            if (seconds < 60) return `${Math.round(seconds)} seconds`;
+            if (seconds < 3600) return `${Math.round(seconds / 60)} minutes`;
+            if (seconds < 86400) return `${Math.round(seconds / 3600)} hours`;
+            if (seconds < 31536000) return `${Math.round(seconds / 86400)} days`;
+            return `${Math.round(seconds / 31536000)} years`;
+        }
+    </script>
+</body>
+</html>
